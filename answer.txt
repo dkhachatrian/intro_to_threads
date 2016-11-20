@@ -1,0 +1,61 @@
+CS33 HW5 (Plaintext Portion)
+David G. Khachatrian
+
+12.18
+`````
+Are the trajectories safe?
+
+H = head of loop (local)
+L = load shared resource
+U = update shared resource
+S = store shared resource
+T = tail of loop (local)
+
+
+a) H2, L2, U2, H1, L1, S2, U1, S1, T1, T2
+                      ^
+                      unsafe!
+Thread 1 loads from the shared resource before Thread 2 stores it. In the end of this sequence, only Thread 1's work is stored.
+
+
+b) H2, H1, L1, U1, S1, L2, T1, U2, S2, T2
+
+safe; Thread 1 stores its result back into the shared resource before Thread 2 loads the shared resource.
+
+
+c) H1, L1, H2, L2, U2, S2, U1, S1, T1, T2
+              ^
+              unsafe!
+Thread 1 and Thread 2 are working with exact copies of the same resource at the same time. So only one thread's result will end up being stored in the end. Since Thread 1 stores later, only its work remains stored.
+
+
+==== PROGRESS GRAPH ==== 
+S
+
+U
+
+L
+
+S
+
+U
+
+L
+
+H
+2
+ 1 H  L  U  S  L  U  S
+
+
+
+
+12.24
+`````
+The functions in the Rio I/O package are thread-safe. Are they also reentrant?
+
+In general, the functions in the Rio I/O package (and really any sort of I/O function) are not reentrant. Two I/O functions may have as an argument the same file descriptor (pointer to a file), and so reference shared data. Care must be taken via some sort of synchronization (e.g., mutual exclusion) to ensure such functions are thread-safe -- and allgedly, the Rio I/O package takes these precautions.
+
+==== Related Information ====
+
+A function is said to be thread-safe if ahd only if it will always produce correct results when called repeatedly from multiple concurreht threads.
+Reentrant functions do not reference any shared data when they are called by multiple threads. In this way, they are a subset of thread-safe functions, and generally more efficient than other types of thread-safe functions as no synchronization is required to ensure correct behavior.
